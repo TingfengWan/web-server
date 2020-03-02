@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.io.*;
 
 import request.*;
-import configuration.*;
+import server.WebServer;
 
 public class Resource {
 
@@ -20,14 +20,10 @@ public class Resource {
   private static String TRACIELY     = "/~traciely/";
   private static String SCRIPTAlias  = "/cgi-bin/";
 
-  ConfigurationReader configReader;
   private Request request;
   public String uri;
-  public HTTPDConf httpdConfig;
 
   public Resource(Request request) throws IOException {
-    this.configReader = new ConfigurationReader();
-    this.httpdConfig = (HTTPDConf) configReader.getConfig(HTTPD_CONF);
     this.request = request;
     this.uri = this.request.getIdentifier();
   }
@@ -36,24 +32,24 @@ public class Resource {
     if(this.isScripted()) {
 
       if(this.uri.equals(abSCRIPTED)) {
-        return this.httpdConfig.lookUp(this.uri, ALIAS).concat("index.html");
+        return WebServer.httpdConf.lookUp(this.uri, ALIAS).concat("index.html");
       }
 
       if(this.uri.equals(SCRIPTAlias)) {
-        return this.httpdConfig.lookUp(this.uri, "SCRIPT_ALIAS").concat("perl_env");
+        return WebServer.httpdConf.lookUp(this.uri, "SCRIPT_ALIAS").concat("perl_env");
       }
       //handle TRACIELY scripted
       if(this.uri.equals(TRACIELY)) {
-        return this.httpdConfig.lookUp(this.uri, "ALIAS").concat("index.html");
+        return WebServer.httpdConf.lookUp(this.uri, "ALIAS").concat("index.html");
       }
     }
 
     if(this.uri.endsWith("/")) {
-      return this.httpdConfig.lookUp(DOCUMENTROOT, HTTPD_CONF)
+      return WebServer.httpdConf.lookUp(DOCUMENTROOT, HTTPD_CONF)
         .concat(this.trimedUri()).concat("index.html");
     }
 
-    return this.httpdConfig.lookUp(DOCUMENTROOT, HTTPD_CONF)
+    return WebServer.httpdConf.lookUp(DOCUMENTROOT, HTTPD_CONF)
       .concat(this.trimedUri());
   }
 

@@ -12,8 +12,7 @@ import java.io.OutputStream;
 
 public abstract class Response {
 
-  ConfigurationReader configFactory = new ConfigurationReader();
-  Config mimeTypes = configFactory.getConfig(ConfigurationReader.MIME_TYPE);
+  static MIMETypes mimeTypes = (MIMETypes) ConfigurationReader.getConfig(ConfigurationReader.MIME_TYPE);
 
   Resource resource;
   Request request;

@@ -2,6 +2,8 @@
 package response;
 
 import resource.*;
+import server.WebServer;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -36,10 +38,10 @@ public class GETResponse extends Response {
     out.flush();
     out.close();
   }
-  public String getContenType() {
+  public String getContentType() {
     String[] identifiers = file.getName().split("\\.");
     String lastElement = identifiers[identifiers.length - 1];
-    String mimeType = mimeTypes.lookUp(lastElement, "MIME_TYPE");
+    String mimeType = WebServer.mimeTypes.lookUp(lastElement, "MIME_TYPE");
 
     return mimeType;
   }
