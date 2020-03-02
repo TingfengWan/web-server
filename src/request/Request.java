@@ -9,6 +9,8 @@ import java.net.InetAddress;
 
 public class Request {
 
+  public static final String KEY_NOT_FOUND = "KEY_NOT_FOUND";
+
   private String method     = "No Method Received";
   private String identifier = "No Identifier Received";
   private String version    = "No Version Received";
@@ -106,7 +108,7 @@ public class Request {
   }
 
   public String getHeader(String key) {
-    return this.headers.getOrDefault(key, "KEY_NOT_FOUND");
+    return this.headers.getOrDefault(key, KEY_NOT_FOUND);
   }
 
   public boolean isBadRequest() {

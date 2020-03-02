@@ -53,7 +53,7 @@ public class ClientWorker implements Runnable {
       if (resource.isProtected()) {
         String authInfo = request.getHeader("Authorization");
 
-        if (authInfo != "KEY_NOT_FOUND") {
+        if (authInfo != Request.KEY_NOT_FOUND) {
           String accessPath = resource.getHtaccessPath();
           Authenticator authenticator = new Authenticator(accessPath);
 
@@ -73,7 +73,7 @@ public class ClientWorker implements Runnable {
       }
 
       String ims = request.getHeader("If-Modified-Since");
-      if (ims != "KEY_NOT_FOUND") {
+      if (ims != Request.KEY_NOT_FOUND) {
         LocalDateTime lastModified = resource.getLastModified().toLocalDateTime();
         LocalDateTime imsDateTime = this.parseIMS(ims).toLocalDateTime();
         if (imsDateTime.isAfter(lastModified)) {

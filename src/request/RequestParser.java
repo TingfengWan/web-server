@@ -96,7 +96,7 @@ public class RequestParser {
   private int getContentLength() {
     String contentLength = request.getHeader("content-length");
 
-    if (contentLength == "KEY_NOT_FOUND") {
+    if (contentLength == Request.KEY_NOT_FOUND) {
       return -1;
     }
 
