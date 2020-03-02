@@ -1,0 +1,4 @@
+AuthUserFile "public_html\\.htpasswd"
+AuthType Basic
+AuthName "Authentication Required"
+Require valid-user
