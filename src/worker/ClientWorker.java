@@ -18,7 +18,6 @@ public class ClientWorker implements Runnable {
   private Socket clientSocket;
   private Logger logger;
 
-  private ResponseWriter responseWriter = new ResponseWriter();
   private Request request;
   private Resource resource;
   private Response response;
@@ -56,7 +55,7 @@ public class ClientWorker implements Runnable {
 
         if (authInfo != "KEY_NOT_FOUND") {
           String accessPath = resource.getHtaccessPath();
-          ServerAuthenticator authenticator = new ServerAuthenticator(accessPath);
+          Authenticator authenticator = new Authenticator(accessPath);
 
           username = authenticator.getUsername(authInfo);
 
@@ -84,7 +83,7 @@ public class ClientWorker implements Runnable {
         }
       }
 
-      response = responseWriter.getResponse(resource);
+      response = new GETResponse(resource);
       this.sendResponse(response);
     }
   }
