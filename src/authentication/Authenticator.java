@@ -7,11 +7,11 @@ import java.security.MessageDigest;
 
 import configuration.*;
 
-public class ServerAuthenticator {
+public class Authenticator {
 
   Config htpasswd, htaccess;
 
-  public ServerAuthenticator(String htaccessPath) {
+  public Authenticator(String htaccessPath) {
     this.htaccess = new HTAccess(htaccessPath);
 
     String htpasswdPath = this.htaccess.lookUp("AuthUserFile", "HTACCESS");
