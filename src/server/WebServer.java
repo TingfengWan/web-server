@@ -16,5 +16,4 @@ public class WebServer{
     ServerWorker server = new ServerWorker(port, THREAD_COUNT);
     new Thread(server).start();
   }
-
 }

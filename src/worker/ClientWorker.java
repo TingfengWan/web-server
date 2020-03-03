@@ -88,7 +88,7 @@ public class ClientWorker implements Runnable {
         System.out.println(resource.absolutePath());
         String s;
         try {  
-          Process p = Runtime.getRuntime().exec(resource.absolutePath());
+          Process p = new ProcessBuilder(resource.absolutePath()).start();
           BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
           BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
           // read the output from the command
@@ -110,7 +110,6 @@ public class ClientWorker implements Runnable {
           this.sendResponse(response);
           System.out.println("Exceptions: ");
           e.printStackTrace();
-          System.exit(-1);
         }
       }
       response = new GETResponse(resource);
