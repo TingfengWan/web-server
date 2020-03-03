@@ -2,7 +2,9 @@
 package worker;
 
 import java.net.Socket;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -82,7 +84,35 @@ public class ClientWorker implements Runnable {
           return;
         }
       }
-
+      if(resource.isScripted()){
+        System.out.println(resource.absolutePath());
+        String s;
+        try {  
+          Process p = Runtime.getRuntime().exec(resource.absolutePath());
+          BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+          BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+          // read the output from the command
+          System.out.println("Standard Out:\n");
+          while ((s = stdInput.readLine()) != null) {
+            System.out.println(s);
+          }
+                
+          // read any errors from the attempted command
+          System.out.println("Standard Error:\n");
+          while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
+          }
+          response = new HEADResponse(resource);
+          this.sendResponse(response);
+        }
+        catch (IOException e) {
+          response = new ServerErrorResponse(resource);
+          this.sendResponse(response);
+          System.out.println("Exceptions: ");
+          e.printStackTrace();
+          System.exit(-1);
+        }
+      }
       response = new GETResponse(resource);
       this.sendResponse(response);
     }

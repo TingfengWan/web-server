@@ -1,9 +1,9 @@
 package server;
 
+import worker.ServerWorker;
 import java.io.IOException;
 
 import configuration.*;
-import worker.*;
 
 public class WebServer{
   private static final int THREAD_COUNT = 4;

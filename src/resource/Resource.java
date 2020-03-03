@@ -13,65 +13,77 @@ import server.WebServer;
 public class Resource {
 
   private static String HTTPD_CONF   = "HTTPD_CONF";
+  private static String SCRIPT_ALIAS = "SCRIPT_ALIAS";
   private static String ALIAS        = "ALIAS";
   private static String DOCUMENTROOT = "DocumentRoot";
   private static String PROTECTED    = ".htaccess";
-  private static String abSCRIPTED   = "/ab/";
-  private static String TRACIELY     = "/~traciely/";
-  private static String SCRIPTAlias  = "/cgi-bin/";
 
   private Request request;
   public String uri;
+  private String root;
 
   public Resource(Request request) throws IOException {
     this.request = request;
     this.uri = this.request.getIdentifier();
+    if(!this.uri.endsWith("/")){
+      String[] tokens = this.uri.split("/");
+      this.root = this.uri.replace(tokens[tokens.length - 1], "");
+    }
+    else
+      this.root = this.uri;
+    if(!isAliased())
+      this.root = DOCUMENTROOT;
+    System.out.println(this.uri);
   }
 
   public String absolutePath() {
-    if(this.isScripted()) {
-
-      if(this.uri.equals(abSCRIPTED)) {
-        return WebServer.httpdConf.lookUp(this.uri, ALIAS).concat("index.html");
-      }
-
-      if(this.uri.equals(SCRIPTAlias)) {
-        return WebServer.httpdConf.lookUp(this.uri, "SCRIPT_ALIAS").concat("perl_env");
-      }
-      //handle TRACIELY scripted
-      if(this.uri.equals(TRACIELY)) {
-        return WebServer.httpdConf.lookUp(this.uri, "ALIAS").concat("index.html");
-      }
+    String lookupKey;
+    String defaultKey = "";
+    if(this.isAliased()) {
+      if(isScripted()) 
+        lookupKey = SCRIPT_ALIAS;
+      else 
+        lookupKey = ALIAS;
     }
-
-    if(this.uri.endsWith("/")) {
-      return WebServer.httpdConf.lookUp(DOCUMENTROOT, HTTPD_CONF)
-        .concat(this.trimedUri()).concat("index.html");
+    else{
+      lookupKey = HTTPD_CONF;
     }
-
-    return WebServer.httpdConf.lookUp(DOCUMENTROOT, HTTPD_CONF)
-      .concat(this.trimedUri());
+    if(this.uri.endsWith("/")){
+      defaultKey = "index.html";
+    }
+    return WebServer.httpdConf.lookUp(root, lookupKey).concat(this.trimmedUri()).concat(defaultKey);
   }
 
-  private Boolean isScripted() {
-    return this.uri.equals(
-      abSCRIPTED) || this.uri.equals(TRACIELY) || this.uri.equals(SCRIPTAlias);
+  public Boolean isAliased() {
+    if (WebServer.httpdConf.lookUp(this.root, ALIAS) != null
+      || WebServer.httpdConf.lookUp(this.root, SCRIPT_ALIAS) != null)
+      return true;
+    return false;
+  }
+  public Boolean isScripted(){
+    if (WebServer.httpdConf.lookUp(this.root, SCRIPT_ALIAS) != null)
+      return true;
+    return false;
   }
 
   public Boolean isProtected() {
-    File accessFile = new File(this.getHtaccessPath());
-    if (accessFile.exists())
-      return true;
-    else
-      return false;
+    if(this.getHtaccessPath() != null){
+      File accessFile = new File(this.getHtaccessPath());
+      if (accessFile.exists())
+        return true;
+    }
+    return false;
   }
 
   public String getUri() {
     return this.request.getIdentifier();
   }
 
-  public String trimedUri() {
-    return this.uri.substring(1);
+  public String trimmedUri() {
+    if(isAliased())
+      return this.uri.substring(root.length());
+    else
+      return this.uri.substring(1);
   }
 
   public Request getRequest() throws IOException {

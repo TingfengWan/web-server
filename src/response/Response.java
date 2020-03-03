@@ -119,8 +119,6 @@ public abstract class Response {
 	  byte[] fileContent;
 	  
 	  if(this.file.exists()){
-      
-      System.out.println(file.canRead());
 		  fileContent = Files.readAllBytes(this.file.toPath());
 	  }
 	  

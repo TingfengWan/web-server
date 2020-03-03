@@ -66,20 +66,20 @@ public class HTTPDConf extends Config {
 
   public String lookUp(String key, String configType) {
     //Possibly change to switch
-    String httpdValue       = this.httpdMap.get(key);
-    String scriptAliasValue = this.scriptAliasMap.get(key);
-    String aliasValue       = this.aliasMap.get(key);
 
     if(configType == null) {
       return null;
     }
     if(configType.equalsIgnoreCase("SCRIPT_ALIAS")) {
+      String scriptAliasValue = this.scriptAliasMap.get(key);
       return scriptAliasValue;
     }
     if(configType.equalsIgnoreCase("ALIAS")) {
+      String aliasValue       = this.aliasMap.get(key);
       return aliasValue;
     }
     if(configType.equalsIgnoreCase("HTTPD_CONF")) {
+      String httpdValue       = this.httpdMap.get(key);
       return httpdValue;
     }
 
