@@ -1,19 +1,18 @@
 
 package response;
 
-import request.*;
-import resource.*;
-import configuration.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.nio.file.Files;
 import java.io.OutputStream;
 
+import request.*;
+import resource.*;
+import server.WebServer;
+
 public abstract class Response {
 
-  ConfigurationReader configFactory = new ConfigurationReader();
-  Config mimeTypes = configFactory.getConfig(ConfigurationReader.MIME_TYPE);
 
   Resource resource;
   Request request;
@@ -111,7 +110,7 @@ public abstract class Response {
   public String getContentType() {
     String[] identifiers = file.getName().split("\\.");
     String lastElement = identifiers[identifiers.length - 1];
-    String mimeType = mimeTypes.lookUp(lastElement, "MIME_TYPE");
+    String mimeType = WebServer.mimeTypes.lookUp(lastElement, "MIME_TYPE");
 
     return mimeType;
   }
@@ -120,8 +119,6 @@ public abstract class Response {
 	  byte[] fileContent;
 	  
 	  if(this.file.exists()){
-      
-      System.out.println(file.canRead());
 		  fileContent = Files.readAllBytes(this.file.toPath());
 	  }
 	  

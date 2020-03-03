@@ -2,7 +2,9 @@
 package worker;
 
 import java.net.Socket;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -18,7 +20,6 @@ public class ClientWorker implements Runnable {
   private Socket clientSocket;
   private Logger logger;
 
-  private ResponseWriter responseWriter = new ResponseWriter();
   private Request request;
   private Resource resource;
   private Response response;
@@ -54,9 +55,9 @@ public class ClientWorker implements Runnable {
       if (resource.isProtected()) {
         String authInfo = request.getHeader("Authorization");
 
-        if (authInfo != "KEY_NOT_FOUND") {
+        if (authInfo != Request.KEY_NOT_FOUND) {
           String accessPath = resource.getHtaccessPath();
-          ServerAuthenticator authenticator = new ServerAuthenticator(accessPath);
+          Authenticator authenticator = new Authenticator(accessPath);
 
           username = authenticator.getUsername(authInfo);
 
@@ -74,7 +75,7 @@ public class ClientWorker implements Runnable {
       }
 
       String ims = request.getHeader("If-Modified-Since");
-      if (ims != "KEY_NOT_FOUND") {
+      if (ims != Request.KEY_NOT_FOUND) {
         LocalDateTime lastModified = resource.getLastModified().toLocalDateTime();
         LocalDateTime imsDateTime = this.parseIMS(ims).toLocalDateTime();
         if (imsDateTime.isAfter(lastModified)) {
@@ -83,8 +84,35 @@ public class ClientWorker implements Runnable {
           return;
         }
       }
-
-      response = responseWriter.getResponse(resource);
+      if(resource.isScripted()){
+        System.out.println(resource.absolutePath());
+        String s;
+        try {  
+          Process p = new ProcessBuilder(resource.absolutePath()).start();
+          BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+          BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+          // read the output from the command
+          System.out.println("Standard Out:\n");
+          while ((s = stdInput.readLine()) != null) {
+            System.out.println(s);
+          }
+                
+          // read any errors from the attempted command
+          System.out.println("Standard Error:\n");
+          while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
+          }
+          response = new HEADResponse(resource);
+          this.sendResponse(response);
+        }
+        catch (IOException e) {
+          response = new ServerErrorResponse(resource);
+          this.sendResponse(response);
+          System.out.println("Exceptions: ");
+          e.printStackTrace();
+        }
+      }
+      response = new GETResponse(resource);
       this.sendResponse(response);
     }
   }

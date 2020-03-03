@@ -8,22 +8,16 @@ import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
-
-
-import configuration.*;
+import server.WebServer;
 import response.*;
 import request.*;
 
 public class Logger {
 
-  private ConfigurationReader configReader;
-  private Config httpdConf;
   private String logFile;
 
   public Logger() {
-    this.configReader = new ConfigurationReader();
-    this.httpdConf = this.configReader.getConfig("HTTPD_CONF");
-    this.logFile = this.httpdConf.lookUp("LogFile", "HTTPD_CONF");
+    this.logFile = WebServer.httpdConf.lookUp("LogFile", "HTTPD_CONF");
   }
 
   public void log(Request request, Response response, String username)

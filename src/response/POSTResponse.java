@@ -17,25 +17,29 @@ public class POSTResponse extends Response {
     this.file = new File(absolutePath);
     this.body = this.request.getBody();
     this.bodyBytes = this.body.getBytes();
-    this.statusCode = 200;
-    this.reasonPhrase = "OK";
   }
 
   public void send(OutputStream out) throws IOException {
 
     if(this.validFile() && this.body.equals("")) {
+      this.statusCode = 200;
+      this.reasonPhrase = "OK";
       out.write(this.getResponseHeaders());
       out.write(this.getResource());
       out.write(this.bodyBytes);
       out.flush();
       out.close();
     } else if(this.validFile()) {
-      out.write(this.getResponseHeaders());//201
+      this.statusCode = 201;
+      this.reasonPhrase = "CREATED";
+      out.write(this.getResponseHeaders());
       out.write(this.getResource());
       out.flush();
       out.close();
     } else {
-      out.write(this.getResponseHeaders());//404
+      this.statusCode = 404;
+      this.reasonPhrase = "NOT FOUND";
+      out.write(this.getResponseHeaders());
       out.flush();
       out.close();
     }

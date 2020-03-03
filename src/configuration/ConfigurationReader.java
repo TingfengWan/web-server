@@ -4,10 +4,8 @@ public class ConfigurationReader {
 
   public static final String HTTPD_CONF = "HTTPD_CONF";
   public static final String MIME_TYPE = "MIME_TYPE";
-  public static final String HTACCESS = "HTACCESS";
-  public static final String HTPASSWD = "HTPASSWD";
   
-  public Config getConfig(String string) {
+  public static Config getConfig(String string) {
     switch(string) {
       case HTTPD_CONF:
         return new HTTPDConf("public_html\\httpd.conf");
